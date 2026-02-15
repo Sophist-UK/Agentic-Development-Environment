@@ -12,7 +12,7 @@ the latest high quality open-source agentic coding models
 like GLM-5 or Kimi-K2.5.
 
 But,
-wholst I have a huge amount of historical IT experience,
+whilst I have a huge amount of historical IT experience,
 I am completely new to AI agentic coding,
 so I am embarking on a voyage of discovery on how to use AI effectively
 to create a new complex open-source app.
@@ -37,7 +37,7 @@ A few things became very clear very quickly:
 1. In general, normal desktop or laptop PCs are
 not going to be suitable to run the types of AI models
 needed for the more complex parts of quality agentic development,
-at least not for the forseeable future.
+at least not for the foreseeable future.
 2. Thus use of internet hosted AI is going to be essential,
 but it can be ***VERY*** easy either:
    * to use up your allowance on
