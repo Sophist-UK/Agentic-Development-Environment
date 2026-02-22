@@ -1,3 +1,5 @@
+<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs'; </script>
+
 # Agentic-Development-Environment
 
 I am about to embark on developing Visual Laravel
@@ -88,6 +90,10 @@ It is anticipated that all of the following services could be Dockerised:
 so that we don't waste input tokens -
 current thought **[`Headroom`](https://github.com/chopratejas/headroom)**
 
+   We then need a way to monitor the effect of `Headroom` on context,
+   and possibly to run A/B tests to compare both context size and results
+   with and without headroom.
+
 * **Automated LLM selection** - A way for either:
    * the agentic tool (Claude, Antigravity etc.)
    to indicate the type of call it is making
@@ -105,7 +111,14 @@ current thought **[`Headroom`](https://github.com/chopratejas/headroom)**
    by having automated fallback routes
    if a call fails due to an outage or excessive usage or excessive difficulty
 
-   **`LiteLLM`** has been identified for this.
+   **`LiteLLM`** or **`ApiPark`** have been identified for this.
+   `ApiPark` has integrated analytics
+   which makes its docker container much more complex,
+   perhaps making it suitable only for experimental comparison
+   of alternative models,
+   whilst `LiteLLM` is simpler and perhaps more suited for long term production.
+   However `ApiPark` is configured via a portal which may be a lot easier\
+   even in production.
 
 * **Running local LLMs** -
 **`Ollama`**
@@ -132,6 +145,53 @@ This would likely also need to include a priority scheme
 so that interactive calls can be given priority
 over e.g. backgroound coding tasks.
 LiteLLM is looking like the most suitable candidate for this.
+
+```mermaid
+---
+config:
+  flowchart:
+    curve: linear
+    theme: neutral
+---
+flowchart TD
+  linkStyle default stroke:red,color:blue
+  classDef default fill:none,color:blue
+  subgraph FrontEnd["FrontEnd"]
+    A["VS Code"] <--> Claude
+    A <--> B["Other Agents"]
+    subgraph devContainer["Docker devContainer"]
+      T["PHP / Web"]
+      MariaDB
+      Redis
+      Mailpit
+    end
+    A --> devContainer
+  end
+  subgraph AI["Docker AI container"]
+    Claude -- Anthropic API --> C["ApiPark"]
+    B -- OpenAI API --> C
+    C -- OpenAI API --> D["Headroom"]
+    D --> C
+    C -- Anthropic API --> Anthropic@{shape: cloud}
+    C -- OpenAi API --> G@{shape: cloud, label: "Other providers"}
+    subgraph Local["Local AI"]
+      Ollama
+      H["DGM Exporter"]
+      Prometheus
+    end
+    C -- OpenAI API ---> Local
+    subgraph APsub["APIPark support"]
+      APsubMariaDB["MariaDB"]
+      InfluxDB
+      APsubRedis["Redis"]
+      Loki
+      NSQ
+    end
+    C --> APsub
+    APsub --> Grafana
+    Local --> Grafana
+  end
+```
 
 Finally, I need to ensure that the calls
 made by the agentic coding environment
